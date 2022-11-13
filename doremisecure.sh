@@ -8,7 +8,6 @@ format_openssl=doremy
 zip_level=0 #0-9, 0 recommended to disable compression
 cipher=aes256 # "openssl enc -ciphers" for a full list of available ciphers
 folder="Secured Folder"
-password=$2
 #------------------
 
 function encrypt ()  {
@@ -50,10 +49,8 @@ openssl)
 esac
 }
 
-if [[ $2 == "" ]]
-then
-    echo "You need to specify a password as the second argument"
-fi
+echo "Input password"
+read password
 
 case $1 in
 d)
@@ -83,7 +80,7 @@ e)
     fi
 ;;
 *)
-        echo "Secure Folder Version 0.3"
+        echo "Secure Folder Version 0.3.1"
         echo "Usage: securefolder.sh [option] [password]"
         echo "Options:"
         echo "h      Help documentation"; echo "e      Encrypt a file/folder"; echo "d      Decrypt a file/folder"
