@@ -1,13 +1,12 @@
 #!/bin/bash
 
 #------Config------
-mode=invididual #individual, total (total is only available for zip encryption)
 encryption=zip #zip, gpg, openssl (gpg to be added)
 format_zip=doremyzip
 format_openssl=doremy
 zip_level=0 #0-9, 0 recommended to disable compression
 cipher=aes256 # "openssl enc -ciphers" for a full list of available ciphers
-folder="Secured Folder"
+folder="Secured Folder" # If the folder name is "current", the script will analyze the current directory instead
 #------------------
 
 function encrypt ()  {
@@ -54,33 +53,30 @@ read password
 
 case $1 in
 d)
-    if [[ $mode == "individual" ]] #Encrypt each file individually instead of the whole folder
+    if [[ $folder != "current" ]]
     then
         cd "$folder"
-        for i in *
-        do
-            decrypt $i $password
-        done
-    elif [[ $encryption == "zip" ]] #Encrypt whole folder for zip archives only
-    then
-        decrypt $folder $password
     fi
+    for i in *
+    do
+        decrypt $i $password
+    done
 ;;
 e)
-    if [[ $mode == "individual" ]]
+    if [[ $folder != "current" ]]
     then
         cd "$folder"
-        for i in *
-        do
-            encrypt $i $password $zip_level
-        done
-    elif [[ $encryption == "zip" ]]
-    then
-        encrypt $folder $password $zip_level
     fi
+    for i in *
+    do
+        if [[ $1 != "doremisecure.sh" ]]
+        then
+            encrypt $i $password $zip_level
+        fi
+    done
 ;;
 *)
-        echo "Secure Folder Version 0.3.2"
+        echo "Secure Folder Version 0.4"
         echo "Usage: securefolder.sh [option]"
         echo "Options:"
         echo "h      Help documentation"; echo "e      Encrypt a file/folder"; echo "d      Decrypt a file/folder"
