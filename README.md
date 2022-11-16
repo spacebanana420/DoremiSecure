@@ -11,19 +11,19 @@ DoremiSecure keeps the contents of a specific folder encrypted, making it fast a
 ### encryption
 Choose the encryption utility. Currently it can either be openssl or zip
 
-### format_zip:
+### format_zip
 The file format for encrypted zip files
 
-### format_openssl:
+### format_openssl
 The file format for encrypted files using OpenSSL
 
-### zip_level:
+### zip_level
 The compression level of zip archives, ranging from 0 (none) to 9 (maximum)
 
-### cipher:
+### cipher
 The encryption mode for OpenSSL. Type the command "openssl enc -ciphers" for a full list of available ciphers
 
-### folder:
+### folder
 The folder which will be used for encryption. If the folder name is "current", the script will analyze the current directory instead
 
 # Requirements
