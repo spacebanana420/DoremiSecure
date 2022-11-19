@@ -9,10 +9,10 @@ Download doremisecure.sh and execute it. Open the script and change the configur
 Choose the encryption utility. Currently it can either be openssl or zip
 
 ### format_zip
-The file format for encrypted zip files
+The file extension for encrypted zip files
 
 ### format_openssl
-The file format for encrypted files using OpenSSL
+The file extension for encrypted files using OpenSSL
 
 ### zip_level
 The compression level of zip archives, ranging from 0 (none) to 9 (maximum)
