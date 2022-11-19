@@ -1,12 +1,8 @@
 ## Description
-DoremiSecure encrypts the files inside a fixed folder, with the intention of making it a "secure folder".
+DoremiSecure encrypts the files inside a fixed folder, making it fast and convenient to mass encrypt each file individually with the intention of making it a "secure folder"
 
 ## How to use
-Download doremisecure.sh and execute it
-
-The configuration is inside the script itself
-
-DoremiSecure keeps the contents of a specific folder encrypted, making it fast and convenient to mass encrypt each file individually
+Download doremisecure.sh and execute it. Open the script and change the configuration in the first lines to customise the tool to your needs
 
 ## Configuration
 ### encryption
