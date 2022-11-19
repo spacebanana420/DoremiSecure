@@ -1,5 +1,5 @@
 ## Description
-DoremiSecure encrypts the files inside a fixed folder, with the intention of making it a "secure folder". The script can also be configured to encrypt the whole folder instead (only for zip archives)
+DoremiSecure encrypts the files inside a fixed folder, with the intention of making it a "secure folder".
 
 ## How to use
 Download doremisecure.sh and execute it
