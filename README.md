@@ -21,7 +21,7 @@ The compression level of zip archives, ranging from 0 (none) to 9 (maximum)
 The encryption mode for OpenSSL. Type the command "openssl enc -ciphers" for a full list of available ciphers
 
 ### folder
-The folder which will be used for encryption. If the folder name is "current", the script will analyze the current directory instead
+The folder which will be used for encryption. If set to "current", the script will analyze the directory where it's located at
 
 ## Requirements
 Bash, zip/unzip, OpenSSL, GPG (to be added), coreutils or busybox
