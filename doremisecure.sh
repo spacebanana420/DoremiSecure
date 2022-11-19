@@ -15,6 +15,7 @@ zip)
     if [[ $1 != ".$format_zip" ]]
     then
         zip -$3 -v -r -P "$2" "$1.$format_zip" "$1"
+        rm -r "$1"
     fi
 ;;
 gpg)
@@ -29,6 +30,7 @@ openssl)
         else
             openssl enc -e -in "$1" -k "$2" -pbkdf2 -$cipher -out "$1.$format_openssl"
         fi
+        rm -r "$1"
     fi
 ;;
 esac
@@ -40,6 +42,7 @@ zip)
     if [[ $1 == ".$format_zip" ]]
     then
         unzip -P "$2" "$1"
+        rm -r "$1"
     fi
 ;;
 gpg)
@@ -52,7 +55,9 @@ openssl)
         if [[ $1 == *".zip"* ]]
         then
             unzip "$noformat"
+            rm -r "$noformat"
         fi
+        rm -r "$1"
     fi
 ;;
 esac
@@ -69,7 +74,7 @@ fi
 case $1 in
 d)
     echo "Input password"
-    read password
+    read -s password
     if [[ $folder != "current" ]]
     then
         cd "$folder"
@@ -81,21 +86,21 @@ d)
 ;;
 e)
     echo "Input password"
-    read password
+    read -s password
     if [[ $folder != "current" ]]
     then
         cd "$folder"
     fi
     for i in *
     do
-        if [[ $1 != "doremisecure.sh" ]]
+        if [[ $i != "doremisecure.sh" ]]
         then
             encrypt $i $password $zip_level
         fi
     done
 ;;
 *)
-        echo "Secure Folder Version 0.5.1"
+        echo "Secure Folder Version 0.6"
         echo "Usage: securefolder.sh [option]"
         echo "Options:"
         echo "h      Help documentation"; echo "e      Encrypt a file/folder"; echo "d      Decrypt a file/folder"
