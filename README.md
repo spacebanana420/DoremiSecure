@@ -5,6 +5,7 @@ DoremiSecure encrypts the files inside a fixed folder, with the intention of mak
 Download doremisecure.sh and execute it
 
 The configuration is inside the script itself
+
 DoremiSecure keeps the contents of a specific folder encrypted, making it fast and convenient to mass encrypt each file individually
 
 ## Configuration
