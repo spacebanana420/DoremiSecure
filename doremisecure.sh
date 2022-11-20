@@ -78,7 +78,7 @@ fi
 
 if [[ $1 == d || $1 == e ]]
 then
-    if [[ -d $folder ]]
+    if [[ $folder != "current" && -d $folder || $folder == "current" ]]
     then
         ready=1
     else
