@@ -71,7 +71,12 @@ then
     zip_level=9
 fi
 
-if [[ $1 == "d" || $1 == "e" ]]
+if [[ $(openssl enc -ciphers) != *"$cipher"* ]]
+then
+    cipher=aes256
+fi
+
+if [[ $1 == d || $1 == e ]]
 then
     if [[ -d $folder ]]
     then
