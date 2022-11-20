@@ -127,7 +127,7 @@ e)
     fi
 ;;
 *)
-        echo "Secure Folder Version 0.6.1"
+        echo "Secure Folder Version 0.6.2"
         echo "Usage: securefolder.sh [option]"
         echo "Options:"
         echo "h    Help documentation"; echo "e    Encrypt a file/folder"; echo "d    Decrypt a file/folder"
