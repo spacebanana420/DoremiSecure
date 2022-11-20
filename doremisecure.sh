@@ -71,7 +71,7 @@ then
     zip_level=9
 fi
 
-if [[ $1 == "d" || $2 == "e" ]]
+if [[ $1 == "d" || $1 == "e" ]]
 then
     if [[ -d $folder ]]
     then
