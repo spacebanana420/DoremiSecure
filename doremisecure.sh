@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #------Config------
-encryption=openssl # zip, gpg, openssl (gpg and 7z to be added)
+encryption=openssl # zip, openssl (gpg and 7z to be added)
 format_zip=doremyzip
 format_openssl=doremy
 zip_level=0 # 0-9, 0 recommended to disable compression
@@ -71,6 +71,19 @@ then
     zip_level=9
 fi
 
+if [[ $1 == "d" || $2 == "e" ]]
+then
+    if [[ -d $folder ]]
+    then
+        ready=1
+    else
+        echo "The defined safe directory does not exist, change the configuration inside the script"
+        ready=0
+    fi
+fi
+
+if [[ $ready == 1 ]]
+then
 case $1 in
 d)
     echo "Input password"
@@ -87,22 +100,32 @@ d)
 e)
     echo "Input password"
     read -s password
+    echo "Repeat password"
+    read -s password2
+
     if [[ $folder != "current" ]]
     then
         cd "$folder"
     fi
-    for i in *
-    do
-        if [[ $i != "doremisecure.sh" ]]
-        then
-            encrypt $i $password $zip_level
-        fi
-    done
+
+    if [[ $password == $password2 ]]
+    then
+        for i in *
+        do
+            if [[ $i != "doremisecure.sh" ]]
+            then
+                encrypt $i $password $zip_level
+            fi
+        done
+    else
+        echo "Passwords do not match"
+    fi
 ;;
 *)
-        echo "Secure Folder Version 0.6"
+        echo "Secure Folder Version 0.6.1"
         echo "Usage: securefolder.sh [option]"
         echo "Options:"
-        echo "h      Help documentation"; echo "e      Encrypt a file/folder"; echo "d      Decrypt a file/folder"
+        echo "h    Help documentation"; echo "e    Encrypt a file/folder"; echo "d    Decrypt a file/folder"
 ;;
 esac
+fi
