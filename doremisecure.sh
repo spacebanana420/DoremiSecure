@@ -1,112 +1,136 @@
 #!/bin/bash
 
-#-----Config-----
-#encryption=zip (not used yet)
-format_zip=zip
-password=dictionary
-password_length=60
-dictionary=dictionary.txt
-dictionary_separator=space
-#----------------
+#------Config------
+encryption=openssl # zip, openssl (gpg and 7z to be added)
+format_zip=doremyzip
+format_openssl=doremy
+zip_level=0 # 0-9, 0 recommended to disable compression
+cipher=aes256 # "openssl enc -ciphers" for a full list of available ciphers
+folder="Safe Folder" # If the folder name is "current", the script will analyze the current directory instead
+#------------------
 
-echo "Andromeda Password Manager (version 0.6.1)"; echo ""
-
-if [[ $password == "ascii" ]]
-then
-    luapass=1
-else
-    luapass=2
-fi
-
-databases(){ #Choose, create and edit databases
-if [[ -e databases.txt ]]
-then
-    ls *$(cat databases.txt)*; echo ""
-    echo "Choose a database or create a new one"
-    read database
-    echo "Input database password"
-    read -s datapass
-    if [[ $(cat databases.txt) == *"$database"* ]]
+function encrypt ()  {
+case $encryption in
+zip)
+    if [[ $1 != ".$format_zip" ]]
     then
-        unzip -P "$datapass" "$database.$format_zip"
-    else
-        echo $database >> databases.txt
-        mkdir "$database"
-        chmod u=rw,g=rw,o= "$database"
+        zip -$3 -v -r -P "$2" "$1.$format_zip" "$1"
+        rm -r "$1"
     fi
-else
-    echo "No databases found. Give a name for the new database or leave blank for 'database0'"
-    read database
-    if [[ $database == "" ]]
-    then
-        database="database0"
-    fi
-    echo "Give a password for the database or leave blank for autogeneration"
-    read -s datapass
-    if [[ $datapass == "" ]]
-    then
-        datapass=$(lua passgen.lua $luapass $password_length $dictionary)
-        echo "A password has been generated for your database:"; echo "$datapass"
-    fi
-    echo $database > databases.txt
-    mkdir $database
-    chmod u=rw,g=rw,o= "$database"
-fi
-mv "$database" ".$database"
-cd ".$database"
-readdatabase
-}
-
-readdatabase() { #Manage the stored passwords in the database
-ls; echo ""; echo "Choose an action"; echo "add  remove  view"
-read action
-case $action in
-add)
-    echo "Give a name for this password entry"
-    read entry
-    if [[ -e $entry ]]
-    then
-        echo "Entry already exists, the password will be changed"
-    fi
-    echo "Input password"
-    read -s password; echo $password > $entry
 ;;
-remove)
-    echo "Choose an entry to remove"
-    read entry
+gpg)
 ;;
-view)
-    for i in *
-    do
-        echo $i ": " $(cat $i)
-    done
+openssl)
+    if [[ $1 != ".$format_openssl" ]]
+    then
+        if [[ -d $1 ]]
+        then
+            zip -0 -r -q "$1.zip" "$1"
+            openssl enc -e -in "$1.zip" -k "$2" -pbkdf2 -$cipher -out "$1.zip.$format_openssl"
+        else
+            openssl enc -e -in "$1" -k "$2" -pbkdf2 -$cipher -out "$1.$format_openssl"
+        fi
+        rm -r "$1"
+    fi
 ;;
 esac
-cd ..
-mv ".$database" "$database"
-zip -3 -r -q -P "$datapass" "$database.$format_zip" "$database" #Database encryption uses AES on a zip archive for flexibility and global support
-rm -r "$database"
-databases
 }
 
+function decrypt () {
+case $encryption in
+zip)
+    if [[ $1 == ".$format_zip" ]]
+    then
+        unzip -P "$2" "$1"
+        rm -r "$1"
+    fi
+;;
+gpg)
+;;
+openssl)
+    if [[ $1 == ".$format_openssl" ]]
+    then
+        noformat=$(basename "$1" ".$format_openssl")
+        openssl enc -d -in "$1" -k "$2" -pbkdf2 -$cipher -out "$noformat"
+        if [[ $1 == *".zip"* ]]
+        then
+            unzip "$noformat"
+            rm -r "$noformat"
+        fi
+        rm -r "$1"
+    fi
+;;
+esac
+}
+
+if (( $zip_level < 0 ))
+then
+    zip_level=0
+elif (( $zip_level > 9 ))
+then
+    zip_level=9
+fi
+
+if [[ $(openssl enc -ciphers) != *"$cipher"* ]]
+then
+    cipher=aes256
+fi
+
+if [[ $1 == d || $1 == e ]]
+then
+    if [[ $folder != "current" && -d $folder || $folder == "current" ]]
+    then
+        ready=1
+    else
+        echo "The defined safe directory does not exist, change the configuration inside the script"
+        ready=0
+    fi
+fi
+
+if [[ $ready == 1 ]]
+then
 case $1 in
-repair)
-    datacheck=$(cat databases.txt)
+d)
+    echo "Input password"
+    read -s password
+    if [[ $folder != "current" ]]
+    then
+        cd "$folder"
+    fi
     for i in *
     do
-        if [[ $i == *".zip"* || $datacheck != *"$i"*  ]]
-        then
-            echo $i >> databases.txt
-        fi
+        decrypt $i $password
     done
-    echo "Database information has been fixed"
+;;
+e)
+    echo "Input password"
+    read -s password
+    echo "Repeat password"
+    read -s password2
+
+    if [[ $folder != "current" ]]
+    then
+        cd "$folder"
+    fi
+
+    if [[ $password == $password2 ]]
+    then
+        for i in *
+        do
+            if [[ $i != "doremisecure.sh" ]]
+            then
+                encrypt $i $password $zip_level
+            fi
+        done
+    else
+        echo "Passwords do not match"
+    fi
 ;;
 *)
-    if [[ $(id -u) == "0" ]]
-    then
-        databases #Default script execution
-    else
-        echo "You need to run this script as root for a safer handling of databases."
-    fi
+        echo "Secure Folder Version 0.6.2"
+        echo "Usage: securefolder.sh [option]"
+        echo "Options:"
+        echo "h    Help documentation"; echo "e    Encrypt a file/folder"; echo "d    Decrypt a file/folder"
 ;;
 esac
+fi
